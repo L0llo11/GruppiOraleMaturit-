@@ -4,17 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Simulatore online per sorteggiare gruppi di studenti per esami orali partendo da una lettera dell'alfabeto.">
-  <meta name="keywords" content="sorteggio gruppi, esame orale, scuola, studenti, interrogazioni, lettere alfabeto">
+  <meta name="keywords" content="maturità, sorteggio gruppi, esame orale, scuola, studenti, interrogazioni, lettere alfabeto, liceo, superiori, quintz">
   <meta name="author" content="TuoNome">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5CECL0DJK2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5CECL0DJK2');
-</script>
   <title>Sorteggio gruppi esame orale</title>
   <style>
     body {
@@ -58,6 +49,7 @@
       padding: 20px;
       margin-top: 30px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow-x: auto;
     }
     .group {
       margin-bottom: 12px;
@@ -87,6 +79,23 @@
     }
     p {
       font-size: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #b39ddb;
+    }
+    th {
+      background-color: #d1c4e9;
+      color: #4a148c;
+    }
+    td {
+      background-color: #f3e5f5;
     }
   </style>
 </head>
@@ -135,7 +144,8 @@
       let index = 0;
       for (let i = 0; i < numGroups; i++) {
         const size = i < extra ? baseSize + 1 : baseSize;
-        output += `<div class="group">Gruppo ${i + 1}: ${reordered.slice(index, index + size).join(', ')}</div>`;
+        const gruppo = reordered.slice(index, index + size).sort();
+        output += `<div class="group">Gruppo ${i + 1}: ` + gruppo.join(', ') + '</div>';
         index += size;
       }
       document.getElementById('output').innerHTML = output;
@@ -160,12 +170,24 @@
         }
       });
 
+      // Creazione tabella percentuali
       let percentText = '<h2>Probabilità di ogni studente di finire in ciascun gruppo:</h2>';
-      for (const studente in percentuali) {
-        percentText += `<p><strong>${studente}</strong>: ` + percentuali[studente].map((v, i) => `Gruppo ${i + 1}: ${(v / 26 * 100).toFixed(2)}%`).join(' | ') + '</p>';
+      percentText += '<table><tr><th>Studente</th>';
+      for (let i = 0; i < numGroups; i++) {
+        percentText += `<th>Gruppo ${i + 1}</th>`;
       }
+      percentText += '</tr>';
+      Object.keys(percentuali).sort().forEach(nome => {
+        percentText += `<tr><td>${nome}</td>`;
+        for (let i = 0; i < numGroups; i++) {
+          percentText += `<td>${(percentuali[nome][i] / 26 * 100).toFixed(2)}%</td>`;
+        }
+        percentText += '</tr>';
+      });
+      percentText += '</table>';
       document.getElementById('percentuali').innerHTML = percentText;
     }
   </script>
 </body>
 </html>
+
